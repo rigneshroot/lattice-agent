@@ -53,6 +53,97 @@ lattice-agent/
 
 ---
 
+## Execution Example Outputs
+
+### 1. Interactive Terminal REPL Output
+Observe a standard research flow when starting the CLI:
+
+```text
+=======================================================
+   __         ______ ______ __   ______ ______ 
+  / /   /\   /_  __//_  __// /  / ____// ____/ 
+ / /   /  \   / /    / /  / /  / __/  / __/    
+/ /___/ /\ \ / /    / /  / /__/ /___ / /___    
+/____/_/  \_\\_/    /_/  /____/_____//_____/    
+                                               
+  COGNITIVE SYNTHESIS ENGINE (Python Edition)
+=======================================================
+Type any research question to prompt the agent.
+Type 'exit' or 'quit' to terminate the session.
+
+Lattice > Search for the latest price of Google stock.
+
+Thinking...
+
+✔ Step Completed.
+  Action: web_search
+
+=== SYNTHESIZED RESPONSE ===
+Based on active market data research, Alphabet Inc. (GOOGL) stock is currently trading at $174.50, representing an increase of +1.2% in today's trading session. Alphabet's market capitalization is estimated at $2.15T with a P/E ratio of 26.4. The company's recent growth has been driven by high demand for Google Cloud infrastructure and advancements in multi-modal Gemini models.
+============================
+```
+
+---
+
+### 2. Jaccard Loop Guard Action (Loop Prevention)
+Lattice prevents runaway agent costs. Watch the Jaccard similarity validator block a duplicate search query and force the agent to pivot:
+
+```text
+Lattice > Search for current price of Google stock, then search for it again.
+
+Thinking...
+
+✔ Step Completed.
+  Action: web_search
+
+[Loop Guard] Looping query detected! Similarity: 100.0%
+
+> [!WARNING]
+> COGNITIVE GUARD TRIGGERED:
+> LOOPING BEHAVIOR DETECTED: Proposed search query "Search for current price of Google stock" shares a 1.0 Jaccard Index similarity with a previously executed query. Execution has been blocked. Pivot your analytical strategy.
+
+✔ Step Completed.
+  Action: (Cognitive Pivot & Synthesis)
+
+=== SYNTHESIZED RESPONSE ===
+Alphabet Inc. (GOOGL) is currently trading at $174.50. I intercepted a repetitive web search request to avoid redundant API execution costs and cognitive loops. The query is identical to our first step which successfully retrieved the current market details.
+============================
+```
+
+---
+
+### 3. WhatsApp Webhook Server Transaction Logs
+Below is the output log when starting Lattice in `GATEWAY=whatsapp` mode and receiving an inbound query webhook from a phone:
+
+```text
+=======================================================
+         LATTICE WHATSAPP INTEGRATION GATEWAY
+=======================================================
+✔ WhatsApp Webhook Server Booted successfully.
+  Listening at: http://0.0.0.0:5000/webhook
+  Configure your Twilio Sandbox Webhook to point here using ngrok!
+
+[WhatsApp Webhook Received]
+  Sender: whatsapp:+14155238886
+  Message: "What is the weather in San Francisco?"
+  Starting autonomous reasoning loop...
+
+[Lattice] Bootstrapping research for task: "What is the weather in San Francisco?"
+Running with Provider: google-genai | Max Steps: 10
+
+--- Starting Step 1/10 ---
+[Lattice Tool] Invoking: web_search (Arguments: {"query": "weather in San Francisco"})
+[web_search] Searching for: "weather in San Francisco"...
+
+--- Starting Step 2/10 ---
+✔ Synthesis Complete. Routing reply back to whatsapp:+14155238886.
+```
+
+---
+
+
+---
+
 ## Programmatic Developer Examples
 
 You can run our curated developer script to observe programmatic execution flow and see how easy it is to register custom tools in the registry:
