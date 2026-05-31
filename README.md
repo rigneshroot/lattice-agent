@@ -8,6 +8,24 @@ Inspired by Charlie Munger’s mental models of multi-dimensional understanding,
 
 ---
 
+## End-to-End Cognitive Workflow
+
+Lattice implements a clean, production-grade linear loop architecture inspired by leading AI research agents like **Dexter** (`virattt/dexter`). Instead of relying on hyper-complex state-graph branch DAGs, the framework organizes cognitive reasoning around an elegant, sequential workflow loop:
+
+![Lattice End-to-End Cognitive Workflow](docs/images/lattice_end_to_end_workflow.png)
+
+### The Step-by-Step Pipeline:
+1. **Inbound Request**: A query is received through either the interactive CLI (`TerminalGateway`) or incoming WhatsApp webhook events (`WhatsAppGateway`).
+2. **Prompt Compilation**: The orchestrator dynamically aggregates instructions, active tools schema definitions, and the agent's durable persona defined in `SOUL.md`.
+3. **Execution Loop (Step 1 to N)**:
+   * **LLM Routing**: Dispatches the compiled prompt state to the active provider router adapter (Gemini, OpenAI, or offline Ollama).
+   * **Jaccard Loop Guard Validation**: Intercepts proposed queries, tokenizing and cleaning words to compute similarity against history. If a repeat behavior is detected ($\ge 0.7$ similarity), it blocks execution, injects a warning, and forces a cognitive pivot to protect against infinite loops and runaway API costs.
+   * **Declarative Tool Execution**: Dispatches validated tool arguments to the centralized `ToolRegistry` (web searches, readers, or outgoing WhatsApp notifications).
+   * **Scratchpad Logging**: Dynamically logs the thought, action, and resulting observation back to the agent's state manager.
+4. **Synthesized Response**: Once sufficient data is accumulated, the agent terminates the cycle and synthesizes a grounded, final analytical response back to the client interface.
+
+---
+
 ## Core Features
 
 - **Recursive Orchestration Loop**: A unified, step-by-step reasoning cycle executing thoughts, actions, and observations.
